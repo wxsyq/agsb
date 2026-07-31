@@ -1,0 +1,32 @@
+name: Playwright Auto Wake Streamlit
+
+on:
+  schedule:
+    # UTC 时间每 6 小时运行一次 (即北京时间每天 0:00, 6:00, 12:00, 18:00)
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # 允许在 GitHub 手动点击测试
+
+jobs:
+  wake:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 拉取仓库代码
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. 安装 Python 环境
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # 3. 安装 Playwright 及其依赖浏览器
+      - name: Install Playwright and Dependencies
+        run: |
+          pip install playwright
+          playwright install chromium --with-deps
+
+      # 4. 执行 Python 唤醒脚本
+      - name: Run Wakeup Script
+        run: |
+          python wake_app.py
